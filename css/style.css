@@ -1,7 +1,23 @@
 
-html, body, #map-canvas
+/**
+{
+	border: solid blue 1px;
+}*/
+html, body
 {
 	height: 100%;
 	margin: 0;
 	padding: 0;
+}
+
+#city-search-box
+{
+	width: 100%;
+	height: 100%;
+}
+
+#map-canvas
+{
+	width: 100%;
+	height: 600px;
 }
