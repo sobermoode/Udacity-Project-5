@@ -21,14 +21,13 @@
 		<div class="container">
 			<div class="row">
 				<div class="col-md-12">
-					<input type="text-box" id="city-search-box" placeholder="Search for a city" oninput="mapController.filterList()">
+					<input type="text" id="location-search-box" placeholder="Filter location results" data-bind="textInput: mapController.searchFilter, event: { keypress: mapController.filterList() }">
 				</div>
 			</div>
 			<div class="row">
 				<div class="col-md-4">
-					<p> list area </p>
-					<ul data-bind="foreach: mapController.locationData">
-						<li data-bind="text: $data.name"></li>
+					<ul data-bind="foreach: mapController.searchResults">
+						<li data-bind="text: $data"></li>
 					</ul>
 					<p></p>
 				</div>

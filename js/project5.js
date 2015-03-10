@@ -67,24 +67,45 @@ var mapModel =
 var mapController =
 {
 	locationData: ko.observableArray( null ),
+	searchResults: ko.observableArray( null ),
+	searchFilter: "",
+	googleMap: null,
 
 	init: function()
 	{
 		mapModel.init();
 		this.locationData( mapModel.getKeyLocations() );
+		this.searchResults( mapModel.getKeyLocations() );
+		this.googleMap = new google.maps.Map( document.getElementById( "map-canvas" ), mapModel.mapOptions );
 	},
 
 	filterList: function()
 	{
-		console.log( "editing the search" );
-	}
+		var matches = this.filterBySearchFilter();
+		this.searchResults( matches );
+	},
 
-	/*getKeyLocations: function()
+	filterBySearchFilter: function()
 	{
-		locationData = mapModel.getKeyLocations();
-	}*/
+		var matchingLocations = [];
+
+		for( var i = 0; i < this.locationData().length; i++ )
+		{
+			if( this.locationData()[ i ].name.search( this.searchFilter ) != -1 )
+			{
+				matchingLocations.push( this.locationData()[ i ].name );
+			}
+			else
+			{
+				continue;
+			}
+		}
+
+		return matchingLocations;
+	}
 }
 
-mapController.init();
+// mapController.init();
+google.maps.event.addDomListener( window, 'load', mapController.init() );
 
 ko.applyBindings( mapController );
