@@ -25,7 +25,7 @@ function initialize()
 		}
 	);
 
-	var infoWindowSaintRocke = new google.maps.InfoWindow(
+	var infoBoxSaintRocke = new InfoBox(
 		{
 			content: markerSaintRocke.title,
 			isOpen: false
@@ -34,11 +34,28 @@ function initialize()
 
 	google.maps.event.addListener( markerSaintRocke, "click", function()
 		{
-			infoWindowSaintRocke.open( map, markerSaintRocke );
-			toggleInfoWindow( infoWindowSaintRocke, this );
+			// infoWindowSaintRocke.open( map, markerSaintRocke );
+			infoBoxSaintRocke.open( map, markerSaintRocke );
+			// toggleInfoWindow( infoWindowSaintRocke, this );
+			toggleInfoBox( infoBoxSaintRocke, this );
 			toggleBounce( this );
 		}
 	);
+
+}
+
+function toggleInfoBox( infoBox, marker )
+{
+	if( infoBox.isOpen )
+	{
+		infoBox.close();
+		infoBox.isOpen = false;
+	}
+	else
+	{
+		infoBox.open( map, marker);
+		infoBox.isOpen = true;
+	}
 }
 
 function toggleInfoWindow( infoWindow, marker )
