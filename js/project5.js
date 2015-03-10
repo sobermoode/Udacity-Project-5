@@ -1,6 +1,7 @@
 
 var mapModel =
 {
+	map: null,
 	mapOptions:
 	{
 		center:
@@ -10,7 +11,6 @@ var mapModel =
 		},
 		zoom: 14
 	},
-
 	latLongs:
 	[
 		// Saint Rocke
@@ -31,33 +31,58 @@ var mapModel =
 			lng: -118.399376
 		}
 	],
-
 	keyLocations:
 	[
 		{
 			name: "Saint Rocke",
-			location: null
+			location: null,
+			marker: null,
+			infoBox: null
 		},
 		{
 			name: "Hermosa Beach Pier",
-			location: null
+			location: null,
+			marker: null,
+			infoBox: null
 		},
 		{
 			name: "Comedy and Magic Club",
-			location: null
+			location: null,
+			marker: null,
+			infoBox: null
 		}
 	],
-
 	init: function()
 	{
+		this.map = new google.maps.Map( document.getElementById( "map-canvas" ), this.mapOptions );
+
 		for( var i = 0; i < this.keyLocations.length; i++ )
 		{
 			var newLatLng = new google.maps.LatLng( this.latLongs[ i ].lat, this.latLongs[ i ].lng );
+			var newMarker = new google.maps.Marker(
+				{
+					position: newLatLng,
+					map: this.map,
+					title: this.keyLocations[ i ].name,
+					animation: null
+				}
+			);
+			var newInfoBox = new InfoBox(
+				{
+					content: this.keyLocations[ i ].name,
+					isOpen: false
+				}
+			);
 
 			this.keyLocations[ i ].location = newLatLng;
+			this.keyLocations[ i ].marker = newMarker;
+			this.keyLocations[ i ].infoBox = newInfoBox;
 		}
 	},
-
+	getMap: function()
+	{
+		return this.map;
+	},
 	getKeyLocations: function()
 	{
 		return this.keyLocations;
@@ -69,14 +94,13 @@ var mapController =
 	locationData: ko.observableArray( null ),
 	searchResults: ko.observableArray( null ),
 	searchFilter: "",
-	googleMap: null,
 
 	init: function()
 	{
 		mapModel.init();
 		this.locationData( mapModel.getKeyLocations() );
 		this.searchResults( mapModel.getKeyLocations() );
-		this.googleMap = new google.maps.Map( document.getElementById( "map-canvas" ), mapModel.mapOptions );
+		views.init();
 	},
 
 	filterList: function()
@@ -91,7 +115,7 @@ var mapController =
 
 		for( var i = 0; i < this.locationData().length; i++ )
 		{
-			if( this.locationData()[ i ].name.search( this.searchFilter ) != -1 )
+			if( this.locationData()[ i ].name.search( this.searchFilter ) !== -1 )
 			{
 				matchingLocations.push( this.locationData()[ i ].name );
 			}
@@ -102,6 +126,67 @@ var mapController =
 		}
 
 		return matchingLocations;
+	},
+
+	getMap: function()
+	{
+		return mapModel.getMap();
+	}
+}
+
+var views =
+{
+	init: function()
+	{
+		google.maps.event.addListener( mapModel.keyLocations[ 0 ].marker, "click", function()
+			{
+				mapModel.keyLocations[ 0 ].infoBox.open( mapController.getMap(), mapModel.keyLocations[ 0 ].marker );
+
+				if( mapModel.keyLocations[ 0 ].infoBox.isOpen )
+				{
+					mapModel.keyLocations[ 0 ].infoBox.close();
+					mapModel.keyLocations[ 0 ].infoBox.isOpen = false;
+				}
+				else
+				{
+					mapModel.keyLocations[ 0 ].infoBox.open( mapController.getMap(), mapModel.keyLocations[ 0 ].marker );
+					mapModel.keyLocations[ 0 ].infoBox.isOpen = true;
+				}
+
+				if( mapModel.keyLocations[ 0 ].marker.getAnimation() !== null )
+				{
+					mapModel.keyLocations[ 0 ].marker.setAnimation( null );
+				}
+				else
+				{
+					mapModel.keyLocations[ 0 ].marker.setAnimation( google.maps.Animation.BOUNCE );
+				}
+			}
+		);
+	},
+	toggleInfoBox: function( infoBox, marker )
+	{
+		if( infoBox.isOpen )
+		{
+			infoBox.close();
+			infoBox.isOpen = false;
+		}
+		else
+		{
+			infoBox.open( map, marker);
+			infoBox.isOpen = true;
+		}
+	},
+	toggleBounce: function( marker )
+	{
+		if( marker.getAnimation() !== null )
+		{
+			marker.setAnimation( null );
+		}
+		else
+		{
+			marker.setAnimation( google.maps.Animation.BOUNCE );
+		}
 	}
 }
 
