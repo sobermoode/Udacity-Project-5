@@ -1,10 +1,7 @@
 
-var map, markerSaintRocke;
-var positionSaintRocke	= new google.maps.LatLng( 33.856228, -118.390256 );
-
-function initialize()
+var mapModel =
 {
-	var mapOptions =
+	mapOptions:
 	{
 		center:
 		{
@@ -12,76 +9,82 @@ function initialize()
 			lng: -118.399722
 		},
 		zoom: 14
-	};
+	},
 
-	map = new google.maps.Map( document.getElementById( "map-canvas" ), mapOptions );
-
-	markerSaintRocke = new google.maps.Marker(
+	latLongs:
+	[
+		// Saint Rocke
 		{
-			position: positionSaintRocke,
-			map: map,
-			title: "Saint Rocke",
-			animation: null
-		}
-	);
+			lat: 33.856228,
+			lng: -118.390256
+		},
 
-	var infoBoxSaintRocke = new InfoBox(
+		// Hermosa Beach Pier
 		{
-			content: markerSaintRocke.title,
-			isOpen: false
-		}
-	);
+			lat: 33.861431,
+			lng: -118.405491
+		},
 
-	google.maps.event.addListener( markerSaintRocke, "click", function()
+		// Comedy and Magic Club
 		{
-			// infoWindowSaintRocke.open( map, markerSaintRocke );
-			infoBoxSaintRocke.open( map, markerSaintRocke );
-			// toggleInfoWindow( infoWindowSaintRocke, this );
-			toggleInfoBox( infoBoxSaintRocke, this );
-			toggleBounce( this );
+			lat: 33.861022,
+			lng: -118.399376
 		}
-	);
+	],
 
-}
+	keyLocations:
+	[
+		{
+			name: "Saint Rocke",
+			location: null
+		},
+		{
+			name: "Hermosa Beach Pier",
+			location: null
+		},
+		{
+			name: "Comedy and Magic Club",
+			location: null
+		}
+	],
 
-function toggleInfoBox( infoBox, marker )
+	init: function()
+	{
+		for( var i = 0; i < this.keyLocations.length; i++ )
+		{
+			var newLatLng = new google.maps.LatLng( this.latLongs[ i ].lat, this.latLongs[ i ].lng );
+
+			this.keyLocations[ i ].location = newLatLng;
+		}
+	},
+
+	getKeyLocations: function()
+	{
+		return this.keyLocations;
+	}
+};
+
+var mapController =
 {
-	if( infoBox.isOpen )
+	locationData: ko.observableArray( null ),
+
+	init: function()
 	{
-		infoBox.close();
-		infoBox.isOpen = false;
-	}
-	else
+		mapModel.init();
+		this.locationData( mapModel.getKeyLocations() );
+	},
+
+	filterList: function()
 	{
-		infoBox.open( map, marker);
-		infoBox.isOpen = true;
+		console.log( "editing the search" );
 	}
+
+	/*getKeyLocations: function()
+	{
+		locationData = mapModel.getKeyLocations();
+	}*/
 }
 
-function toggleInfoWindow( infoWindow, marker )
-{
-	if( infoWindow.isOpen )
-	{
-		infoWindow.close();
-		infoWindow.isOpen = false;
-	}
-	else
-	{
-		infoWindow.open( map, marker);
-		infoWindow.isOpen = true;
-	}
-}
+mapController.init();
 
-function toggleBounce( marker )
-{
-	if( marker.getAnimation() != null )
-	{
-		marker.setAnimation( null );
-	}
-	else
-	{
-		marker.setAnimation( google.maps.Animation.BOUNCE );
-	}
-}
-
-google.maps.event.addDomListener( window, 'load', initialize );
+ko.applyBindings( mapController );
