@@ -138,7 +138,36 @@ var views =
 {
 	init: function()
 	{
-		google.maps.event.addListener( mapModel.keyLocations[ 0 ].marker, "click", function()
+		mapModel.keyLocations.forEach( function( theLocation )
+			{
+				google.maps.event.addListener( theLocation.marker, "click", function()
+					{
+						theLocation.infoBox.open( mapController.getMap(), theLocation.marker );
+
+						if( theLocation.infoBox.isOpen )
+						{
+							theLocation.infoBox.close();
+							theLocation.infoBox.isOpen = false;
+						}
+						else
+						{
+							theLocation.infoBox.open( mapController.getMap(), theLocation.marker );
+							theLocation.infoBox.isOpen = true;
+						}
+
+						if( theLocation.marker.getAnimation() !== null )
+						{
+							theLocation.marker.setAnimation( null );
+						}
+						else
+						{
+							theLocation.marker.setAnimation( google.maps.Animation.BOUNCE );
+						}
+					}
+				);
+			}
+		);
+		/*google.maps.event.addListener( mapModel.keyLocations[ 0 ].marker, "click", function()
 			{
 				mapModel.keyLocations[ 0 ].infoBox.open( mapController.getMap(), mapModel.keyLocations[ 0 ].marker );
 
@@ -162,7 +191,7 @@ var views =
 					mapModel.keyLocations[ 0 ].marker.setAnimation( google.maps.Animation.BOUNCE );
 				}
 			}
-		);
+		);*/
 	},
 	toggleInfoBox: function( infoBox, marker )
 	{
