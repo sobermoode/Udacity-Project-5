@@ -29,6 +29,24 @@ var mapModel =
 		{
 			lat: 33.861022,
 			lng: -118.399376
+		},
+
+		// Tin Roof Bistro
+		{
+			lat: 33.900204,
+			lng: -118.395766
+		},
+
+		// Beach Cities Cycle
+		{
+			lat: 33.857758,
+			lng: -118.391157
+		},
+
+		// South Park
+		{
+			lat: 33.858540,
+			lng: -118.395455
 		}
 	],
 	keyLocations:
@@ -47,6 +65,24 @@ var mapModel =
 		},
 		{
 			name: "Comedy and Magic Club",
+			location: null,
+			marker: null,
+			infoBox: null
+		},
+		{
+			name: "Tin Roof Bistro",
+			location: null,
+			marker: null,
+			infoBox: null
+		},
+		{
+			name: "Beach Cities Cycle",
+			location: null,
+			marker: null,
+			infoBox: null
+		},
+		{
+			name: "South Park",
 			location: null,
 			marker: null,
 			infoBox: null
@@ -98,8 +134,13 @@ var mapController =
 	init: function()
 	{
 		mapModel.init();
+
 		this.locationData( mapModel.getKeyLocations() );
-		this.searchResults( mapModel.getKeyLocations() );
+		for ( var i = 0; i < mapModel.getKeyLocations().length; i++ )
+		{
+      		this.searchResults().push( mapModel.getKeyLocations()[ i ].name );
+    	}
+
 		views.init();
 	},
 
@@ -115,7 +156,7 @@ var mapController =
 
 		for( var i = 0; i < this.locationData().length; i++ )
 		{
-			if( this.locationData()[ i ].name.search( this.searchFilter ) !== -1 )
+			if( this.locationData()[ i ].name.toLowerCase().search( this.searchFilter.toLowerCase() ) !== -1 )
 			{
 				matchingLocations.push( this.locationData()[ i ].name );
 			}
@@ -136,76 +177,57 @@ var mapController =
 
 var views =
 {
+	previousMarker: null,
+	previousInfoBox: null,
+
 	init: function()
 	{
 		mapModel.keyLocations.forEach( function( theLocation )
 			{
 				google.maps.event.addListener( theLocation.marker, "click", function()
 					{
-						theLocation.infoBox.open( mapController.getMap(), theLocation.marker );
+						views.toggleInfoBox( mapController.getMap(), theLocation.infoBox, theLocation.marker );
+					}
+				);
 
-						if( theLocation.infoBox.isOpen )
-						{
-							theLocation.infoBox.close();
-							theLocation.infoBox.isOpen = false;
-						}
-						else
-						{
-							theLocation.infoBox.open( mapController.getMap(), theLocation.marker );
-							theLocation.infoBox.isOpen = true;
-						}
-
-						if( theLocation.marker.getAnimation() !== null )
-						{
-							theLocation.marker.setAnimation( null );
-						}
-						else
-						{
-							theLocation.marker.setAnimation( google.maps.Animation.BOUNCE );
-						}
+				google.maps.event.addListener( theLocation.infoBox, "closeclick", function()
+					{
+						views.toggleInfoBox( mapController.getMap(), theLocation.infoBox, theLocation.marker );
 					}
 				);
 			}
 		);
-		/*google.maps.event.addListener( mapModel.keyLocations[ 0 ].marker, "click", function()
-			{
-				mapModel.keyLocations[ 0 ].infoBox.open( mapController.getMap(), mapModel.keyLocations[ 0 ].marker );
-
-				if( mapModel.keyLocations[ 0 ].infoBox.isOpen )
-				{
-					mapModel.keyLocations[ 0 ].infoBox.close();
-					mapModel.keyLocations[ 0 ].infoBox.isOpen = false;
-				}
-				else
-				{
-					mapModel.keyLocations[ 0 ].infoBox.open( mapController.getMap(), mapModel.keyLocations[ 0 ].marker );
-					mapModel.keyLocations[ 0 ].infoBox.isOpen = true;
-				}
-
-				if( mapModel.keyLocations[ 0 ].marker.getAnimation() !== null )
-				{
-					mapModel.keyLocations[ 0 ].marker.setAnimation( null );
-				}
-				else
-				{
-					mapModel.keyLocations[ 0 ].marker.setAnimation( google.maps.Animation.BOUNCE );
-				}
-			}
-		);*/
 	},
-	toggleInfoBox: function( infoBox, marker )
+
+	toggleInfoBox: function( map, infoBox, marker )
 	{
 		if( infoBox.isOpen )
 		{
 			infoBox.close();
 			infoBox.isOpen = false;
+			this.toggleBounce( marker );
+			this.previousMarker = null;
+			this.previousInfoBox = null;
 		}
 		else
 		{
-			infoBox.open( map, marker);
+			if( this.previousInfoBox !== null )
+			{
+				this.previousInfoBox.close();
+				this.previousInfoBox.isOpen = false;
+				this.previousInfoBox = null;
+				this.toggleBounce( this.previousMarker );
+				this.previousMarker = null;
+			}
+
+			infoBox.open( map, marker );
 			infoBox.isOpen = true;
+			this.toggleBounce( marker );
+			this.previousInfoBox = infoBox;
+			this.previousMarker = marker;
 		}
 	},
+
 	toggleBounce: function( marker )
 	{
 		if( marker.getAnimation() !== null )
@@ -219,7 +241,6 @@ var views =
 	}
 }
 
-// mapController.init();
 google.maps.event.addDomListener( window, 'load', mapController.init() );
 
 ko.applyBindings( mapController );

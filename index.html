@@ -21,7 +21,7 @@
 		<div class="container">
 			<div class="row">
 				<div class="col-md-12">
-					<input type="text" id="location-search-box" placeholder="Filter location results" data-bind="textInput: mapController.searchFilter, event: { keypress: mapController.filterList() }">
+					<input type="text" id="location-search-box" placeholder="Filter location results" data-bind="textInput: mapController.searchFilter, event: { keyup: mapController.filterList }">
 				</div>
 			</div>
 			<div class="row">
