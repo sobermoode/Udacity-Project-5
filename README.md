@@ -1,10 +1,14 @@
 
 Udacity Project 5
 Neighborhood Map Project
-==========================
+---
 
 The first thing I did was check out the [Office Hours notes](https://github.com/udacity/fend-office-hours/tree/master/Javascript%20Design%20Patterns/P5%20Project%20Overview) for Project 5. That gave me a general overview of what the finished project should look like.
 
-- [Google Maps API](https://developers.google.com/maps/documentation/javascript/tutorial)
-	I refreshed my knowledge of the Google Maps API and read up on how to implement the markers, creating an InfoBox (easier to style that the InfoWindow), and adding the bounce animation.
+Then, I refreshed my knowledge of the [Google Maps API](https://developers.google.com/maps/documentation/javascript/tutorial) and read up on how to implement the markers, creating an InfoBox (easier to style that the InfoWindow), and adding the bounce animation.
 
+After I got the map working, I worked on the search list, specifically, filtering the results. What I was trying to do was match the search filter against the marked locations on a per-character basis. This means that I was attempting to match the search filter "as-is" against the strings representing the marked locations. So, for instance, if one of the marked locations was called, "Lucille's," it would stay on the map if the search filter was, "L," "Lu," "Luc," etc. But, if the search filter was, "Lucx," then the Lucille's marker would disappear.
+
+This was very difficult to implement and gave me a lot of trouble; I spent most of the day puzzling on it, and consulting various pieces of documentation, forum posts, and tips on websites. It's not even useful to list them here, because none of them helped, actually - at first I had a problem with the responsiveness of the textInput data-bind with Knockout (I still do, and posted a question about it [here](http://discussions.udacity.com/t/problem-with-value-and-textinput-data-bindings/11851)), and I read up on the official documentation; then I had a problem returning the correct filtered search results, because I was using [Array.prototype.filter()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter) instead of String.prototype.search(), which was much easier to work with; in addition to various failings of logic at each of those steps.
+
+What finally cracked it was watching the [Office Hours video](https://plus.google.com/u/0/events/cb3105iclo5391h3bfg805m9k3k?authkey=CKG-_pG1hN_cmwE). I tried to watch it the previous night, but I had to be given an invitation first, and I hadn't remembered to go and check until after all my woes, described above. In the first two minutes, I can see that the search filtering can match on any character or string, ie., if the locations I've marked on the map are "Lucille's," "Bowling Alley," and "Rite-Aid," they all should appear on the map if the search filter is, "i." That's what led me to start using [String.prototype.search()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/search).
