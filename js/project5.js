@@ -146,8 +146,7 @@ var mapController =
 
 	filterList: function()
 	{
-		var matches = this.filterBySearchFilter();
-		this.searchResults( matches );
+		this.searchResults( this.filterBySearchFilter() );
 	},
 
 	filterBySearchFilter: function()
@@ -158,11 +157,13 @@ var mapController =
 		{
 			if( this.locationData()[ i ].name.toLowerCase().search( this.searchFilter.toLowerCase() ) !== -1 )
 			{
+				this.locationData()[ i ].marker.setVisible( true );
 				matchingLocations.push( this.locationData()[ i ].name );
 			}
 			else
 			{
-				continue;
+				this.locationData()[ i ].marker.setVisible( false );
+				this.locationData()[ i ].infoBox.close();
 			}
 		}
 
