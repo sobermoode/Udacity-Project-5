@@ -200,6 +200,20 @@ var views =
 		);
 	},
 
+	listClick: function( clickedLocation )
+	{
+		var locations = mapModel.getKeyLocations();
+
+		locations.forEach( function( location )
+			{
+				if( location.name === clickedLocation )
+				{
+					views.toggleInfoBox( mapController.getMap(), location.infoBox, location.marker );
+				}
+			}
+		);
+	},
+
 	toggleInfoBox: function( map, infoBox, marker )
 	{
 		if( infoBox.isOpen )

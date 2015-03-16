@@ -26,8 +26,8 @@
 			</div>
 			<div class="row">
 				<div class="col-md-4">
-					<ul data-bind="foreach: mapController.searchResults">
-						<li data-bind="text: $data"></li>
+					<ul id="location-list" data-bind="foreach: mapController.searchResults">
+						<li data-bind="text: $data, click: views.listClick"></li>
 					</ul>
 					<p></p>
 				</div>
